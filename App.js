@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
 import {CustomDrawerContent} from './src/components'
-import {HomeScreen,TakvimScreen,AramaScreen, IsbirligiScreen, TakvimScreenDetail,ProfilScreen} from './src/tab'
+import {HomeScreen,TakvimScreen,AramaScreen, IsbirligiScreen, ProfilScreen, DetailPage} from './src/tab'
 import {LoginScreen} from './src/auth'
 import {IMAGE} from './src/constants/images'
 
@@ -22,17 +22,26 @@ function TakvimStack(){
   return(
     <Stack.Navigator initialRouteName="Takvim">
       <Stack.Screen name = "TakvimScreen" component={TakvimScreen} options={navOptionHandler}/>
-      <Stack.Screen name = "TakvimDetail" component={TakvimScreenDetail} options={navOptionHandler}/>
+      <Stack.Screen name = "DetailPage" component={DetailPage} options={navOptionHandler}/>
+    </Stack.Navigator>
+  )
+}
+function HomeStack(){
+  return(
+    <Stack.Navigator initialRouteName="Anasayfa">
+      <Stack.Screen name = "HomeScreen" component={HomeScreen} options={navOptionHandler}/>
+      <Stack.Screen name = "DetailPage" component={DetailPage} options={navOptionHandler}/>
     </Stack.Navigator>
   )
 }
 function TabNavigator(){
   return(
-  <Tab.Navigator
-      screenOptions={({ route }) => ({
+  <Tab.Navigator 
+      screenOptions={({route}) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
+         // console.log(route.params.data);
+          
           if (route.name === 'Anasayfa') {
             iconName = IMAGE.icon_anasayfa;
           } else if (route.name === 'Takvim') {
@@ -50,6 +59,7 @@ function TabNavigator(){
                 resizeMode="contain"/>;
         },
       })}
+      
       tabBarOptions={{
         style: {
           height: 80,
@@ -58,7 +68,8 @@ function TabNavigator(){
         activeTintColor: 'tomato',
         inactiveTintColor: 'black',
       }}>
-        <Tab.Screen name="Anasayfa" component={HomeScreen} />  
+       
+        <Tab.Screen name="Anasayfa" component={HomeStack}/>  
         <Tab.Screen name ="Takvim" component={TakvimStack} />
         <Tab.Screen name ="Isbirligi" component={IsbirligiScreen} />
         <Tab.Screen name ="Arama" component={AramaScreen} />    
@@ -66,22 +77,22 @@ function TabNavigator(){
       </Tab.Navigator>
   )
 }
-
-function DrawerNavigator(){
+  function DrawerNavigator({navigation}){
 return(
-  <Drawer.Navigator initialRouteName="Bildirim"
-       drawerContent = {() => <CustomDrawerContent/>}>
-        <Drawer.Screen name="Bildirim" component={TabNavigator} />  
+  <Drawer.Navigator initialRouteName="MenuTab"
+       drawerContent = {() => <CustomDrawerContent navigation={navigation}/> }>
+        <Drawer.Screen name="MenuTab" component={TabNavigator} />  
       </Drawer.Navigator>
 )
-}
+}  
 
 export default function App() {
   return (
     <NavigationContainer>
       <StackApp.Navigator initialRouteName="LoginScreen">
-        <StackApp.Screen name = "HomeApp" component={DrawerNavigator} options={navOptionHandler}/>
         <StackApp.Screen name = "LoginScreen" component={LoginScreen} options={navOptionHandler}/>
+        <StackApp.Screen name = "HomeApp" component={DrawerNavigator} options={navOptionHandler} 
+        />
       </StackApp.Navigator>
     </NavigationContainer>
   );

@@ -1,59 +1,61 @@
 import React,{Component} from 'react';
-import { Text, View,SafeAreaView,StyleSheet,TextInput,Image,ScrollView } from 'react-native';
-import {IMAGE} from '../constants/images'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View,SafeAreaView,StyleSheet,Alert,ActivityIndicator,Button } from 'react-native';
+import { authorize } from 'react-native-app-auth';
+import AsyncStorage from '@react-native-community/async-storage';
 
-
+  const config = {
+    issuer: 'https://omid.plusauth.com',
+    clientId: '1oz0dM9KlK9kBhdCYJYovg_8XPdZ_GtZ307FPru34wAIUZme',
+    redirectUrl: 'com.plusauth.demo:/oauthredirect', 
+    scopes: [  
+      'openid', 
+      'profile', 
+      'email', 
+      'offline_access' 
+  ],
+ 
+  };
+    
 export class LoginScreen extends Component {
-    state={
-      email:"",
-      password:""
-    }
+   constructor(props){
+     super(props);
+     this.state={
+      acces:false,
+      Token:""
+     }
+   }
+   
+   async getData(){
+    try {
+     //console.log("Login");
+       const result = await authorize(config) 
+     //  console.log("Token",result.idToken)
+     //  console.log("TokenType",result.tokenType)      
+       this.setState({acces:true,Token:result.idToken})
+    
+       await AsyncStorage.setItem(TOKEN, `${result.idToken}`);
+      {this.state.acces == true ? this.props.navigation.navigate('HomeApp'): console.log("fsdf")} 
+  
+    }catch(error){
+        Alert.alert('Failed to log in', error.message);
+      } 
+}
     render(){
-      return (     
-          <SafeAreaView style={{ flex: 1,backgroundColor:"white"}}>
-              
-              <View style ={{flexDirection: 'row', height:70} }>
-                    <View style={{ flex: 1, justifyContent: 'center',alignItems:"center"}}>
-                        <Image
-                              source ={IMAGE.icon_title}
-                              resizeMode="contain"/>
-                        </View>
+      if(this.state.acces == true){
+        return(
+          <SafeAreaView style={{ flex: 1, backgroundColor:'white'}}>
+              <View style={styles.loader}>
+                <ActivityIndicator size="large"/>
               </View>
-              
-            <View style={styles.container}>
-                    
-                   <View style={{marginBottom:30}}>
-                   <Text style={styles.text}>MERHABA</Text>
-                    <Text style={styles.text}>HOCAM</Text>           
-            
-                     </View> 
-                   
-                    <View style={styles.inputView} > 
-                          <TextInput             
-                            placeholder="TC Kimlik No" 
-                            onChangeText={text => this.setState({email:text})}/>      
-                    </View>
+          </SafeAreaView>
+        )}
+      return (  
+        <SafeAreaView style={{ flex: 1,backgroundColor:"white",justifyContent:"center", alignContent:"center",}}>          
                             
-              <View style={styles.inputView} >
-                      <TextInput  
-                        secureTextEntry
-                        style={styles.inputText}
-                        placeholder="Şifre" 
-                        onChangeText={text => this.setState({password:text})}/>
-              </View>
-          
-              <View  style ={{flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-                    <TouchableOpacity style={styles.loginBtn} onPress={() => this.props.navigation.navigate('HomeApp')}>
-                        
-                      <Text style={styles.loginText}>GİRİŞ</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Text style={styles.forgot}>Şifremi Unuttum!</Text>
-                    </TouchableOpacity>         
-              </View>
-          </View>
-              
+              <View style={styles.buttonContainer}>
+                  <Button onPress={() => this.getData()} title="GİRİŞ" />
+             </View>
+            
        </SafeAreaView>
       );
     }
@@ -64,6 +66,17 @@ export class LoginScreen extends Component {
       flex: 1,
       paddingTop:100,
       justifyContent: 'center',
+      
+    },
+   loader:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
+      },
+    buttonContainer: {
+      padding: 10,
+      shadowColor: '#000000',
+      margin:80,
     },
     text:{
       marginLeft:25,
@@ -88,10 +101,9 @@ export class LoginScreen extends Component {
       fontSize:11
     },
     loginBtn:{
-      width:200,
       backgroundColor:"#638776",
       borderRadius:8,
-      height:40,
+      
       alignItems:"center",
       justifyContent:"center",
       marginTop:60,
@@ -103,4 +115,4 @@ export class LoginScreen extends Component {
     }
   });
 
-  
+  export const TOKEN = 'token';
