@@ -18,7 +18,7 @@
     "@react-navigation/stack": "^5.2.3",
     "adb": "^0.2.0",
     "events": "^3.1.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "moment": "^2.24.0",
     "native-base": "^2.13.12",
     "react": "16.9.0",
